@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<style>
+</style>
+<body>
+    <form action="">
+        <input type="text" id="nome"  placeholder="Exemplo: João Silva"> 
+        <input type="text" id="email"  placeholder="Exemplo: seuemail@dominio.com">
+        <input type="button" value="gravar" onclick="gravar()">
+    </form>
+   <script>
+    function gravar() {
+        const nome = document.getElementById("nome").value;
+        console.log(nome);
+        console.log(nome.value);
+
+        const email = document.getElementById("email").value;
+        console.log(email);
+        console.log(Number(email.value));
+
+        const nomeSpan = document.getElementById("nome");
+        nomeSpan.textContent = nome;
+
+        const emailSpan = document.getElementById("email");
+        emailSpan.textContent = email;
+        if (email.includes("@") && email.includes(".com")) {
+            emailSpan.style.backgroundColor = "rgb(0, 255, 0, 0.05)";
+        } else {
+            alert("Email inválido!");
+        }
+        if (nome.length > 0) {
+            nomeSpan.style.backgroundColor = "rgb(0, 255, 0, 0.05)";
+        } else {
+            alert("Nome inválido!");
+        }
+    }
+    document.getElementsByTagName('form')[0].onsubmit = function(event) {
+        event.preventDefault();
+    }
+    </script>
+</body>
+</html>
