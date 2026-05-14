@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="cadastro">
+        <h1>Central de Cadastro</h1>
+        <form action="">
+            <input type="text" id="nome"  placeholder="Exemplo: João Silva"> 
+            <input type="text" id="email"  placeholder="Exemplo: joao@email.com">
+            <input type="text" id="telefone"  placeholder="Exemplo: (11) 99999-9999">
+            <button type="submit" onclick="Cadastrar()">Cadastrar</button>
+        </form>
+    </div>
+    <TABLE>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+            </tr>
+        </thead>
+        <tbody id="cadastros-lista">
+            
+        </tbody>
+    </TABLE>
+    <script>
+        function Cadastrar() {
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+            const telefone = document.getElementById("telefone").value;
+
+            console.log(nome);
+            console.log(email);
+            console.log(telefone);
+
+            if (nome.length > 0) {
+                alert("Cadastro realizado com sucesso!");
+                document.getElementById("cadastros-lista").innerHTML += `<tr><td>${nome}</td><td>${email}</td><td>${telefone}</td></tr>`;  
+            } else {
+                alert("Nome inválido!");
+            }
+        }
+        document.getElementsByTagName('form')[0].onsubmit = function(event) {
+            event.preventDefault();
+        }
+    </script>
+</body>
+</html>
