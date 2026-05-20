@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="cadastro.css">
+    <title>Central de Cadastro</title>
+</head>
+<body>
+    <div class="cadastro">
+        <h1>Central de Cadastro</h1>
+        <form id="meuFormulario">
+            <input type="text" id="nome" placeholder="Exemplo: João Silva" required> 
+            <input type="text" id="email" placeholder="Exemplo: joao@email.com">
+            <input type="text" id="telefone" placeholder="Exemplo: (11) 99999-9999">
+            <button type="submit">Cadastrar</button>
+        </form>
+        <br>
+        <a href="lista.html" style="text-decoration: none;"><button type="button" id="btn-ver-cadastros">Ver Cadastros</button></a>
+    </div>
+
+    <script>
+        document.getElementById('meuFormulario').addEventListener('submit', function(event) {
+            // Impede a página de recarregar
+            event.preventDefault();
+
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+            const telefone = document.getElementById("telefone").value;
+
+            if (nome.trim().length === 0) {
+                alert("Nome inválido!");
+                return;
+            }
+            if (email.trim().length === 0 || !email.includes("@")) {
+                alert("Email inválido!");
+                return;
+            }
+            if (telefone.trim().length === 0) {
+                alert("Telefone inválido!");
+                return;
+            }
+
+            // 1. Criar o objeto com os dados do novo usuário
+            const novoUsuario = { nome, email, telefone };
+
+            // 2. Buscar a lista que já existe no localStorage (se não existir, cria um array vazio)
+            let listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+            // 3. Adicionar o novo usuário na lista
+            listaUsuarios.push(novoUsuario);
+
+            // 4. Salvar a lista atualizada de volta no localStorage (convertida para texto)
+            localStorage.setItem("usuarios", JSON.stringify(listaUsuarios));
+
+            alert("Cadastro realizado com sucesso!");
+
+            // Limpa o formulário após cadastrar
+            this.reset();
+            
+            // Redireciona automaticamente para a página da lista
+            window.location.href = "lista.html";
+        });
+    </script>
+</body>
+</html>
