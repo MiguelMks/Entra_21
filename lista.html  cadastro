@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="cadastro.css">
+    <title>Lista de Cadastros</title>
+</head>
+<body>
+    <div class="cadastro">
+        <h1>Usuários Cadastrados</h1>
+        <a href="index.html" style="text-decoration: none;"><button type="button">Voltar para Cadastro</button></a>
+    </div>
+    
+    <br>
+    <div id="cadastros-lista" class="cadastro-mural">
+
+    </div>
+    <script>
+        // Executa assim que a página termina de carregar
+        window.onload = function() {
+            const tabelaBody = document.getElementById("cadastros-lista");
+
+            // 1. Pegar os dados do localStorage
+            const listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+            // 2. Verificar se há dados salvos
+            if (listaUsuarios.length === 0) {
+               tabelaBody.innerHTML = `<p style="text-align:center; width: 100%; color: black">Nenhum cadastro encontrado.</p>`;
+               return;
+            }
+
+            // 3. Percorrer a lista e adicionar as linhas na tabela
+            listaUsuarios.forEach((usuario, index) => {
+                tabelaBody.innerHTML += `
+                    <div class="cadastro-cliente">
+                        <h2>${usuario.nome}</h2>
+                        <p>Email: ${usuario.email}</p>
+                        <p>Telefone: ${usuario.telefone}</p>
+                        <button type="button" onclick="excluirCadastro(${index})">Excluir</button>
+                        <button type="button" onclick="editarCadastro(${index})" style="background-color: midnightblue; color: white;">Editar</button>
+                    </div>
+                `;
+            });
+        };
+        function excluirCadastro(index) {
+            // 1. Pegar os dados do localStorage
+            let listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            // 2. Corta o usuário da lista usando o índice
+            listaUsuarios.splice(index, 1);
+
+            // 3. Salvar a lista atualizada de volta no localStorage
+            localStorage.setItem("usuarios", JSON.stringify(listaUsuarios));
+
+            // 4. Recarregar a página para atualizar a lista exibida
+            window.location.reload();
+        }
+        function editarCadastro(index) {
+            // 1. Pega a lista do localStorage
+            let listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    
+            // 2. ENCONTRA O USUÁRIO ATUAL (A linha que está faltando!)
+            const usuario = listaUsuarios[index];
+
+            // 3. Abre os prompts usando os dados atuais encontrados
+            const novoNome = prompt("Editar Nome:", usuario.nome);
+            const novoEmail = prompt("Editar Email:", usuario.email);
+            const novoTelefone = prompt("Editar Telefone:", usuario.telefone);
+
+            //4. Validar os novos dados (opcional, mas recomendado)
+            if (novoNome.trim().length === 0) {
+                alert("Nome inválido!");
+                return;
+            }
+            if (novoEmail.trim().length === 0 || !novoEmail.includes("@")) {
+                alert("Email inválido!");
+                return;
+            }
+            if (novoTelefone.trim().length === 0) {
+                alert("Telefone inválido!");
+                return;
+            }
+
+            //5. Substituir os dados antigos pelos novos
+            listaUsuarios[index].nome = novoNome;
+            listaUsuarios[index].email = novoEmail;
+            listaUsuarios[index].telefone = novoTelefone;
+
+            //6. Salvar a lista atualizada de volta no localStorage
+            localStorage.setItem("usuarios", JSON.stringify(listaUsuarios));
+
+            //7. Recarregar a página para atualizar a lista exibida
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
