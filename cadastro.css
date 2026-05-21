@@ -73,8 +73,8 @@ body {
         color:white;
         cursor:pointer;
         transition:0.3s;
-        display:block;
-        margin:10px auto 0;
+        display:inline-block;
+        margin: 10px 5px 0 0;
 }
 #btn-ver-cadastros {
         background:midnightblue;
@@ -86,4 +86,147 @@ body {
         transition:0.3s;
         display:block;
         margin:10px auto 0;  
+}
+.edicao-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border: 2px solid midnightblue;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        width: 90%;             /* MUDOU: Adapta-se a telas menores */
+        max-width: 450px;       /* MUDOU: Largura máxima controlada */
+        max-height: 85vh;       /* NOVO: Impede o modal de sumir para fora da tela */
+        overflow-y: auto;       /* NOVO: Cria rolagem se houver muitos campos */
+        color: #333;            /* NOVO: Força o texto do modal a ficar escuro e visível */
+}
+.edicao-container.ativo {
+        display: block;
+}
+.overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+}
+.overlay.ativo {
+        display: block;
+}
+.edicao-container h2 {
+        color: midnightblue;
+        margin-bottom: 20px;
+}
+.edicao-container input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 14px;
+        color: #000; /* NOVO: Garante que o texto digitado nos campos de edição seja escuro e visível */
+}
+.botoes-edicao {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+}
+.botoes-edicao button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+}
+.botoes-edicao button.salvar {
+        background-color: midnightblue;
+        color: white;
+}
+.botoes-edicao button.cancelar {
+        background-color: #ccc;
+        color: black;
+}
+.confirmacao-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border: 2px solid crimson;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        width: 90%;             /* MUDOU: Adapta-se a telas menores */
+        max-width: 450px;       /* MUDOU: Largura máxima controlada */
+        text-align: center;
+        color: #333;            /* NOVO: Força o texto do modal a ficar escuro e visível */
+}
+.confirmacao-container.ativo {
+        display: block;
+}
+.confirmacao-container h2 {
+        color: crimson;
+        margin-bottom: 10px;
+}
+.confirmacao-container p {
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 14px;
+}
+.botoes-confirmacao {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+}
+.botoes-confirmacao button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block; /* MUDOU: Garante que os botões fiquem lado a lado mesmo em telas menores */
+        margin: 5px 5px 0 0; /* MUDOU: Adiciona margem entre os botões */
+}
+.botoes-confirmacao button.cancelar {
+        background-color: midnightblue;
+        color: white;
+}
+.botoes-confirmacao button.excluir {
+        background-color: crimson;
+        color: white;
+}
+@media (max-width: 600px) {
+        .cadastro {
+                width: 100%;
+                padding: 15px;
+        }
+        .cadastro input {
+                width: 100%;
+        }
+        .cadastro-mural {
+                grid-template-columns: 1fr;
+        }
+}
+@media (max-width: 400px) {
+        .edicao-container, .confirmacao-container {
+                width: 95%;
+                padding: 20px;
+        }
+        .botoes-edicao button, .botoes-confirmacao button {
+                width: 100%;
+                margin: 5px 0;
+        }
 }
