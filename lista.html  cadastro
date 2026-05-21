@@ -13,41 +13,123 @@
     </div>
     
     <br>
-    <div id="cadastros-lista" class="cadastro-mural">
+    <div id="visualizacao" class="cadastro-mural"></div>
 
+    <div class="overlay" id="overlay"></div>
+    <div class="edicao-container" id="edicaoContainer">
+        <h2>Editar Cadastro</h2>
+        <input type="text" id="editNome" placeholder="Nome">
+        <input type="text" id="editEmail" placeholder="Email">
+        <input type="text" id="editTelefone" placeholder="Telefone">
+        <input type="text" id="editCep" placeholder="CEP" onblur="verificarEBuscarCEPEdicao()">
+        <input type="text" id="editLogradouro" placeholder="Logradouro">
+        <input type="text" id="editBairro" placeholder="Bairro">
+        <input type="text" id="editCidade" placeholder="Cidade">
+        <input type="text" id="editEstado" placeholder="Estado">
+        <input type="text" id="editNumero" placeholder="Número">
+
+        <div class="botoes-edicao">
+            <button class="cancelar" onclick="cancelarEdicao()">Cancelar</button>
+            <button class="salvar" onclick="salvarEdicao()">Salvar</button>
+        </div>
     </div>
+
+    <div class="overlay" id="overlayExclusao"></div>
+    <div class="confirmacao-container" id="confirmacaoContainer">
+        <h2>Tem certeza de excluir esse usuário?</h2>
+        <p>Esta ação não pode ser desfeita.</p>
+        <div class="botoes-confirmacao">
+            <button class="cancelar" onclick="cancelarExclusao()">Cancelar</button>
+            <button class="excluir" onclick="confirmarExclusao()">Excluir</button>
+        </div>
+    </div>
+
     <script>
+        let indiceEmEdicao = null;
+        let indiceParaExcluir = null;
+
         // Executa assim que a página termina de carregar
         window.onload = function() {
-            const tabelaBody = document.getElementById("cadastros-lista");
-
+            // 0. Seleciona o elemento onde os cadastros serão exibidos
+            const visualizacao = document.getElementById("visualizacao");
             // 1. Pegar os dados do localStorage
             const listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
             // 2. Verificar se há dados salvos
             if (listaUsuarios.length === 0) {
-               tabelaBody.innerHTML = `<p style="text-align:center; width: 100%; color: black">Nenhum cadastro encontrado.</p>`;
+               visualizacao.innerHTML = `<p style="text-align:center; width: 100%; color: black">Nenhum cadastro encontrado.</p>`;
                return;
             }
 
-            // 3. Percorrer a lista e adicionar as linhas na tabela
+            // 3. Percorrer a lista e adicionar as linhas na visualização
             listaUsuarios.forEach((usuario, index) => {
-                tabelaBody.innerHTML += `
+                // 4. Adicionar o cadastro na visualização usando template literals
+                visualizacao.innerHTML += `
                     <div class="cadastro-cliente">
                         <h2>${usuario.nome}</h2>
-                        <p>Email: ${usuario.email}</p>
-                        <p>Telefone: ${usuario.telefone}</p>
-                        <button type="button" onclick="excluirCadastro(${index})">Excluir</button>
-                        <button type="button" onclick="editarCadastro(${index})" style="background-color: midnightblue; color: white;">Editar</button>
+                        <p><strong>Email:</strong> ${usuario.email}</p>
+                        <p><strong>Telefone:</strong> ${usuario.telefone}</p>
+                        <p><strong>CEP:</strong> ${usuario.cep}</p>
+                        <button type="button" onclick="abrirEdicao(${index})" style="background-color: midnightblue; color: white;">Editar</button>
+                        <button type="button" onclick="excluirCadastro(${index})" style="background-color: red; color: white;">Excluir</button>
                     </div>
                 `;
             });
         };
+        // Função para buscar o logradouro usando a API do ViaCEP
+        function buscarLogradouro(cep) {
+            const cepLimpo = cep.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+            if (cepLimpo.length !== 8) {
+                alert("CEP inválido! O CEP deve conter 8 dígitos.");
+                return Promise.reject("Formato de CEP inválido");// Retorna uma promessa rejeitada para indicar que houve um erro de validação
+            }
+
+            return fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+                .then(response => response.json())
+                .catch(error => {
+                    console.error("Erro ao buscar o CEP:", error);
+                    alert("Ocorreu um erro ao buscar o CEP. Tente novamente mais tarde.");
+                });
+        }
+
+        async function verificarEBuscarCEPEdiçao() {
+            const cepRaw = document.getElementById("editCep").value;
+            const cepLimpo = cep.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+            if (cepLimpo.length !== 8) { return }
+
+            try {
+                const data = await buscarLogradouro(cepLimpo);
+                if (!!data || data.erro === true || data.erro === "true") {
+                    alert("CEP não encontrado!");
+                    return;
+                } 
+                document.getElementById("editLogradouro").value = data.logradouro || "";
+                document.getElementById("editBairro").value = data.bairro || "";
+                document.getElementById("editCidade").value = data.localidade || "";
+                document.getElementById("editEstado").value = data.uf || "";
+                document.getElementById('editNumero').focus(); // Foca no campo de número após preencher os dados do endereço
+            } catch (error) {
+                console.error(error);
+        }
+    }
         function excluirCadastro(index) {
+            // Armazena o índice do usuário a ser excluído
+            indiceParaExcluir = index;
+
+            // Mostrar a div de confirmação e o overlay
+            document.getElementById("confirmacaoContainer").classList.add("ativo");
+            document.getElementById("overlayExclusao").classList.add("ativo");
+        }
+
+
+        function confirmarExclusao() {
             // 1. Pegar os dados do localStorage
             let listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            
             // 2. Corta o usuário da lista usando o índice
-            listaUsuarios.splice(index, 1);
+            listaUsuarios.splice(indiceParaExcluir, 1);
 
             // 3. Salvar a lista atualizada de volta no localStorage
             localStorage.setItem("usuarios", JSON.stringify(listaUsuarios));
@@ -55,43 +137,118 @@
             // 4. Recarregar a página para atualizar a lista exibida
             window.location.reload();
         }
-        function editarCadastro(index) {
-            // 1. Pega a lista do localStorage
+
+        function cancelarExclusao() {
+            // Fechar a div de confirmação e o overlay
+            document.getElementById("confirmacaoContainer").classList.remove("ativo");
+            document.getElementById("overlayExclusao").classList.remove("ativo");
+            indiceParaExcluir = null;
+        }
+
+        function abrirEdicao(index) {
+            // Pega a lista do localStorage
             let listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    
-            // 2. ENCONTRA O USUÁRIO ATUAL (A linha que está faltando!)
             const usuario = listaUsuarios[index];
+            indiceEmEdicao = index;
 
-            // 3. Abre os prompts usando os dados atuais encontrados
-            const novoNome = prompt("Editar Nome:", usuario.nome);
-            const novoEmail = prompt("Editar Email:", usuario.email);
-            const novoTelefone = prompt("Editar Telefone:", usuario.telefone);
+            // Preenchimento dos inputs com os dados atuais
+            document.getElementById("editNome").value = usuario.nome;
+            document.getElementById("editEmail").value = usuario.email;
+            document.getElementById("editTelefone").value = usuario.telefone;
+            document.getElementById("editCep").value = usuario.cep;
+            document.getElementById("editLogradouro").value = usuario.logradouro;
+            document.getElementById("editBairro").value = usuario.bairro;
+            document.getElementById("editCidade").value = usuario.cidade;
+            document.getElementById("editEstado").value = usuario.estado;
+            document.getElementById("editNumero").value = usuario.numero;
+            // Mostrar a div de edição e o overlay
+            document.getElementById("edicaoContainer").classList.add("ativo");
+            document.getElementById("overlay").classList.add("ativo");
+        }
+        // Função para cancelar a edição e fechar a div de edição
+        function cancelarEdicao() {
+            // Limpar os inputs
+            document.getElementById("editNome").value = "";
+            document.getElementById("editEmail").value = "";
+            document.getElementById("editTelefone").value = "";
+            document.getElementById("editCep").value = "";
+            document.getElementById("editLogradouro").value = "";
+            document.getElementById("editBairro").value = "";
+            document.getElementById("editCidade").value = "";
+            document.getElementById("editEstado").value = "";
+            document.getElementById("editNumero").value = "";
+            // Esconder a div de edição e o overlay
+            document.getElementById("edicaoContainer").classList.remove("ativo");
+            document.getElementById("overlay").classList.remove("ativo");
+            indiceEmEdicao = null;
+        }
+        async function salvarEdicao() {
+            // 1. Pegar os novos valores dos inputs
+            const novoNome = document.getElementById("editNome").value;
+            const novoEmail = document.getElementById("editEmail").value;
+            const novoTelefone = document.getElementById("editTelefone").value;
+            const novoCep = document.getElementById("editCep").value.trim();
+            const novoLogradouro = document.getElementById("editLogradouro").value;
+            const novoBairro = document.getElementById("editBairro").value;
+            const novaCidade = document.getElementById("editCidade").value;
+            const novoEstado = document.getElementById("editEstado").value;
+            const novoNumero = document.getElementById("editNumero").value;
 
-            //4. Validar os novos dados (opcional, mas recomendado)
+            // 2. Validar os novos dados
+            // Validação básica do nome
             if (novoNome.trim().length === 0) {
                 alert("Nome inválido!");
                 return;
             }
+            // Validação básica do email (apenas formato)
             if (novoEmail.trim().length === 0 || !novoEmail.includes("@")) {
                 alert("Email inválido!");
                 return;
             }
+            // Validação básica do telefone (apenas formato)
             if (novoTelefone.trim().length === 0) {
                 alert("Telefone inválido!");
                 return;
             }
+            // Validação básica do CEP (apenas formato)
+            if (novoCep.length !== 8 || isNaN(novoCep)) {
+                alert("CEP Precisa de 8 caracteres!");
+                return;
+            }
+            try {
+                const data = await buscarLogradouro(novoCep);
 
-            //5. Substituir os dados antigos pelos novos
-            listaUsuarios[index].nome = novoNome;
-            listaUsuarios[index].email = novoEmail;
-            listaUsuarios[index].telefone = novoTelefone;
+                if (!data || data.erro === true || data.erro === "true") {
+                    alert("CEP não encontrado!");
+                    return;
+                } 
+            } catch (error) {
+                console.error("Error:", error);
+            }
+            // 3. Pega a lista do localStorage
+            let listaUsuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-            //6. Salvar a lista atualizada de volta no localStorage
+            // 4. Atualizar os dados no índice correto
+            listaUsuarios[indiceEmEdicao] = {
+                nome: novoNome,
+                email: novoEmail,
+                telefone: novoTelefone,
+                cep: novoCep,
+                logradouro: novoLogradouro,
+                bairro: novoBairro,
+                cidade: novaCidade,
+                estado: novoEstado,
+                numero: novoNumero
+            };
+
+            // 5. Salvar a lista atualizada de volta no localStorage
             localStorage.setItem("usuarios", JSON.stringify(listaUsuarios));
-
-            //7. Recarregar a página para atualizar a lista exibida
+            // 6. Esconder a div de edição
+            cancelarEdicao();
+            // 7. Recarregar a página para atualizar a visualização
             window.location.reload();
         }
+
     </script>
 </body>
 </html>
