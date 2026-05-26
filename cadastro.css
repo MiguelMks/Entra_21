@@ -26,6 +26,12 @@ body {
         border:none;
         width:200px;
 }
+/* Classe usada para marcar campos inválidos */
+.invalid {
+        border: 2px solid crimson !important;
+        background-color: #fff0f0 !important;
+        box-shadow: 0 0 4px rgba(220,20,60,0.4);
+}
 .cadastro h1 {
         text-align:center;
         color:white;
@@ -207,6 +213,25 @@ body {
 .botoes-confirmacao button.excluir {
         background-color: crimson;
         color: white;
+}
+/* Estilo padrão do aviso (escondido) */
+.toast {
+        position: fixed;
+        bottom: -100px; /* Começa fora da tela (efeito de subir) */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2e7d32; /* Verde elegante de sucesso */
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: bottom 0.5s ease-in-out; /* Efeito suave de transição */
+        z-index: 2000;
+}
+/* Classe que o JavaScript vai adicionar para mostrar o aviso */
+.toast.mostrar {
+        bottom: 30px; /* Sobe para dentro da tela */
 }
 @media (max-width: 600px) {
         .cadastro {
